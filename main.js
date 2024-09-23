@@ -21,7 +21,6 @@ const materials = [
     cor2,
     new THREE.MeshBasicMaterial({ color: 0xeae3dc }),
     new THREE.MeshBasicMaterial({ color: 0xffffff })
-
 ];
 
 // Atribuindo os materiais às faces do cubo
@@ -30,11 +29,57 @@ scene.add(cube);
 
 camera.position.z = 5;
 
+// Variáveis para as interações
+let rotationSpeedX = 0.01;
+let rotationSpeedY = 0.01;
+let cubeColorIndex = 0;
+
+// Função que alterna as cores do cubo
+function changeCubeColor() {
+    const colors = [cor1, cor2];
+    cube.material[0] = colors[cubeColorIndex % colors.length]; // Muda a primeira face
+    cube.material[3] = colors[cubeColorIndex % colors.length]; // Muda a quarta face
+    cubeColorIndex++;
+}
+
+// Função que alterna a rotação do cubo
+function toggleRotation() {
+    rotationSpeedX = rotationSpeedX === 0 ? 0.01 : 0;
+    rotationSpeedY = rotationSpeedY === 0 ? 0.01 : 0;
+}
+
+// Função para detectar interações com o teclado
+document.addEventListener('keydown', (event) => {
+    switch(event.key) {
+        case 'r': // Tecla 'r' reseta a rotação
+            cube.rotation.set(0, 0, 0);
+            break;
+        case 'c': // Tecla 'c' muda as cores do cubo
+            changeCubeColor();
+            break;
+        case 'p': // Tecla 'p' pausa/retoma a rotação
+            toggleRotation();
+            break;
+        default:
+            break;
+    }
+});
+
+// Função para detectar clique do mouse
+document.addEventListener('mousedown', (event) => {
+    if (event.button === 0) {
+        // Clique com o botão esquerdo do mouse
+        camera.position.z += 0.5; // Zoom com o botão esquerdo
+    } else if (event.button === 2) {
+        // Clique com o botão direito do mouse
+        camera.position.z -= 0.5; // Zoom inverso com o botão direito
+    }
+});
+
+// Função de animação
 function animate() {
+    cube.rotation.x += rotationSpeedX;
+    cube.rotation.y += rotationSpeedY;
 
-	cube.rotation.x += 0.01;
-	cube.rotation.y += 0.01;
-
-	renderer.render( scene, camera );
-
+    renderer.render( scene, camera );
 }
